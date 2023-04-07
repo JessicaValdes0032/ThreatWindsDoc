@@ -42,7 +42,7 @@ We get this code when the user was created successfully. It returns a [Session](
 
 > Fields of the response:
 
-* **bearer** (_string_): The bearer (Refers from now on as Autentication Header) is used as a means of authentication for the APIs, and must be included in the header of all requests that require authentication (See [Auth Page](../Auth/AUTENTICATIONAPI.md) for more details). The authentication header must be verified using the verificationCodeID in the the [Session Verification Endpoint](session.md) before it can be used to ensure that it is valid.\
+* **bearer** (_string_): The bearer (Refers from now on as Autentication Header) is used as a means of authentication for the APIs, and must be included in the header of all requests that require authentication (See [Auth Page](broken-reference) for more details). The authentication header must be verified using the verificationCodeID in the the [Session Verification Endpoint](session.md) before it can be used to ensure that it is valid.\
 
 
 ```
@@ -51,7 +51,7 @@ e.g.: fq6JoEFTsxiXAl1cVxPDnK4emIQCwaUBfq6JoEFTsxiXAl1cVxPDnK4emIQCwaUB
 
 * **verificationCodeID** (_string_): The verification code id that is used in the [Session Verification Endpoint](session.md) to ensure that the session is valid. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
 
-* **expireAt** (_integer_): A timestamp that represents the expiration datetime of the session. If you want to extend it, use the [Extend Session Endpoint](../Auth/AUTENTICATIONAPI.md). _e.g.:1674492894_\
+* **expireAt** (_integer_): A timestamp that represents the expiration datetime of the session. If you want to extend it, use the [Extend Session Endpoint](broken-reference). _e.g.:1674492894_\
 
 * **ip** (_string_): The ip from the account and session was created. _e.g.: 1.1.1.1_\
 

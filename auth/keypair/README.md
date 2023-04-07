@@ -1,39 +1,41 @@
-# Email
+# KeyPair
 
 Table of Content:
 
-* [Create Email](email.md#createEmail)
-* [Close Email](email.md#deleteEmail)
-* [Get Emails](email.md#getEmails)
-* [Verify Email](email.md#verifyEmail)
-* [New Verification Code](email.md#newCodeEmail)
-* [Set Preferred Email](email.md#setPreferredkEmail)
+* [Create KeyPair](./#createKeyPair)
+* [Delete KeyPair](./#deleteKeyPair)
+* [Get KeyPairs](./#getKeyPairs)
+* [Verify KeyPair](./#verifyKeyPair)
+* [New Verification Code](./#newCodeKeyPair)
+* [Check KeyPair](./#checkKeyPair)
 
-## Create Email <a href="#createemail" id="createemail"></a>
+## Create KeyPair <a href="#createkeypair" id="createkeypair"></a>
 
-This API endpoint creates an unverified Email and send a verification code.\
+This API endpoint creates an unverified KeyPair.\
 \
-EndPoint: https://intelligence.threatwinds.com/api/auth/v2/email
 
-### Parameters
 
-* **Authorization header** (_string_): This authorization header can be obtained from an active session of the account. Please ensure that the Email is active before attempting to retrieve the authorization header for account deletion.\_e.g.:
+**EndPoint:** [https://intelligence.threatwinds.com/api/auth/v2/keypair](https://intelligence.threatwinds.com/api/auth/v2/keypair)
+
+> **Parameters**
+
+* **Authorization header** (_string_): This authorization header can be obtained from an active session of the account. Please ensure that the session is active before attempting to retrieve the authorization header for account deletion.\_e.g.:
 * **Message** (_JSON_):
-  * **address** (string): The email parameter represents a user's email address that is going to be associated with their account. This email address is used for communication with the user, and may also be used as a way to reset their password or verify their account. _e.g.: john@doe.net_\
-    \
-    \
+  * **days** (_integer_): The 'days' parameter specifies the length of time, in days, that the key pair will remain valid. _e.g.: 365_
+  * **name** (_string_): "The 'name' parameter is used to specify a name or identifier for the key pair. _e.g.: Example_\
 
 
-To create a email, use a **POST** request, for example:
+To create a KeyPair, use a **POST** request, for example:
 
 ```bash
 curl -X 'POST' \
-  'https://intelligence.threatwinds.com/api/auth/v2/email' \
+  'https://intelligence.threatwinds.com/api/auth/v2/keypair' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer fq6JoEFTsxiXAl1cVdPDnK4emIQCwaUBfq9JoEFTsxhXAl1cVxPDnK4emIQCwaUB' \
   -H 'Content-Type: application/json' \
   -d '{
-  "address": "john@doe.com"
+  "days": 365,
+  "name": "Example"
 }'
 ```
 
@@ -41,14 +43,23 @@ curl -X 'POST' \
 
 > **Code 202**
 
-#### Return a verification code as Response
+#### Return a KeyPair as Response
 
-We get this code when the email was created successfully. It returns a verificationCodeID. Remember that you need to verify this email before you can use it.
+We get this code when the KeyPair was created successfully. It returns a KeyPair(apiKey and apiSecret). Remember that you need to verify this keypair before you can use it.
 
 > Fields of the response:
 
-* **verificationCodeID** (_string_): The verification code id that is used in the Email Verification Endpoint to ensure that the email is valid. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
+* **apiKey** (_string_): The apiKey is a unique identifier that, when combined with the apiSecret, serves as a method of authentication for accessing to the endpoints that require authentication. It acts as a public key that identifies the authorized user or system making the API request.
+* **apiSecret** (_string_): The apiSecret is a piece of confidential information that, when combined with the apiKey, serves as a method of authentication for accessing to the endpoints that require it. Ensure to save the apiSecret in a safe place, this will not be shown again.
+* **verificationCodeID** (_string_): The verification code id that is used in the [KeyPair Verification Endpoint](./) to ensure that the KeyPair is valid. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
 
+* **expireAt** (_integer_): A timestamp that represents the expiration datetime of the KeyPair. _e.g.:1674492894_\
+
+* **keyID** (_string_): The id of the KeyPair that was created. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
+
+* **keyName** (_string_): The name of the KeyPair that was created. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
+
+* **verified** (_boolean_): A boolean that represents if the KeyPair is verified or not.
 
 > **Errors**
 
@@ -104,13 +115,13 @@ For example:
 }
 ```
 
-## Delete Email <a href="#deleteemail" id="deleteemail"></a>
+## Delete KeyPair <a href="#deletekeypair" id="deletekeypair"></a>
 
-This API endpoint delete an Email.\
+This API endpoint closes a KeyPair.\
 \
 
 
-**EndPoint:** [https://intelligence.threatwinds.com/api/auth/v2/email](https://intelligence.threatwinds.com/api/auth/v2/email)
+**EndPoint:** [https://intelligence.threatwinds.com/api/auth/v2/keypair](https://intelligence.threatwinds.com/api/auth/v2/keypair)
 
 > **Parameters**
 
@@ -120,14 +131,14 @@ This API endpoint delete an Email.\
 e.g.: Bearer fq6JoEFTsxiXAl1cVxPDnK4emIQCwaUBfq6JoEFTsxiXAl1cVxPDnK4emIQCwaUB
 ```
 
-* **Email ID** (_string_): The id of the Email that you want to delete. _e.g.: john@doe.net_\
+* **KeyPair ID** (_string_): The id of the KeyPair that you want to delete. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
 
 
-To delete an email, use a **DELETE** request, for example:
+To delete a KeyPair, use a **DELETE** request, for example:
 
 ```bash
 curl -X 'DELETE' \
-  'https://intelligence.threatwinds.com/api/auth/v2/email/5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e' \
+  'https://intelligence.threatwinds.com/api/auth/v2/keypair/5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer 5f35d2c4-5633-4b16-bxf0-5ca32ef8ea2e'
 ```
@@ -138,7 +149,7 @@ curl -X 'DELETE' \
 
 #### Returns the message "acknowledged"
 
-When a email is successfully deleted, the code returns a JSON object with a 'message' field whose value is 'acknowledged'.
+When a KeyPair is successfully deleted, the code returns a JSON object with a 'message' field whose value is 'acknowledged'.
 
 > Fields of the response:
 
@@ -153,17 +164,17 @@ When a email is successfully deleted, the code returns a JSON object with a 'mes
 
 > **Code 404 - Not found**
 
-The HTTP status code 404, also known as a "Not Found" error occurs when the requested resource, in this case, the email or the session, cannot be found.
+The HTTP status code 404, also known as a "Not Found" error occurs when the requested resource, in this case, the KeyPair or the session, cannot be found.
 
 There are several reasons why this may occur, such as:
 
-* the session or the email has expired.
+* the session or the keypair has expired.
 * the session has not been verified.
-* the email does not exist in the system.\
+* the keypair does not exist in the system.\
   \
 
 
-It's important to double-check the parameters before attempting to delete the email.
+It's important to double-check the parameters before attempting to delete the KeyPair.
 
 For example:
 
@@ -189,7 +200,7 @@ For example:
 
 > **Code 500 - Internal server error**
 
-We get this code when an internal server error occurs. This is not email related.
+We get this code when an internal server error occurs. This is not user related.
 
 For example:
 
@@ -200,13 +211,13 @@ For example:
 }
 ```
 
-## Get Emails <a href="#getemails" id="getemails"></a>
+## Get KeyPairs <a href="#getkeypairs" id="getkeypairs"></a>
 
-This API endpoint to get the user emails.\
+This API endpoint to get the user KeyPairs.\
 \
 
 
-**EndPoint:** [https://intelligence.threatwinds.com/api/auth/v2/emails](https://intelligence.threatwinds.com/api/auth/v2/emails)
+**EndPoint:** [https://intelligence.threatwinds.com/api/auth/v2/keypairs](https://intelligence.threatwinds.com/api/auth/v2/keypairs)
 
 > **Parameters**
 
@@ -216,11 +227,11 @@ This API endpoint to get the user emails.\
 e.g.: Bearer fq6JoEFTsxiXAl1cVxPDnK4emIQCwaUBfq6JoEFTsxiXAl1cVxPDnK4emIQCwaUB
 ```
 
-To get the currents emails, use a **GET** request, for example:
+To get the currents KeyPairs, use a **GET** request, for example:
 
 ```
 curl -X 'GET' \
-  'https://intelligence.threatwinds.com/api/auth/v2/emails' \
+  'https://intelligence.threatwinds.com/api/auth/v2/keypairs' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer 63VD8JoautQNqRLcqNOlJid02R7CDbWK'
 ```
@@ -229,18 +240,20 @@ curl -X 'GET' \
 
 > **Code 202**
 
-#### Returns a list of Emails
+#### Returns a list of KeyPairs
 
-It returns the list of the current user Emails.
+It returns the list of the current user [KeyPairs](./).
 
 > Fields of the response:
 
-* **address** (_string_): The address of the email.
-* **emailID** (_string_): The id of the email that was created. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
+* **apiKey** (_string_): The apiKey is a unique identifier that, when combined with the apiSecret, serves as a method of authentication for accessing to the endpoints that require authentication. It acts as a public key that identifies the authorized user or system making the API request.
+* **expireAt** (_integer_): A timestamp that represents the expiration datetime of the KeyPair. _e.g.:1674492894_\
 
-* **preferred** (boolean): A boolean that represents if the email is set as preferred or not.\_\
+* **keyID** (_string_): The id of the KeyPair that was created. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
 
-* **verified** (_boolean_): A boolean that represents if the email is verified or not.
+* **keyName** (_string_): The name of the KeyPair that was created. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
+
+* **verified** (_boolean_): A boolean that represents if the KeyPair is verified or not.
 
 > **Errors**
 
@@ -289,26 +302,26 @@ For example:
 
 We get this code when an internal server error occurs. This is not user related.
 
-## Verify Email <a href="#verifyemail" id="verifyemail"></a>
+## Verify KeyPair <a href="#verifykeypair" id="verifykeypair"></a>
 
-This API endpoint verifies the Email using code sent by email.\
+This API endpoint verifies the KeyPair using code sent by email.\
 \
 
 
-**EndPoint:** [https://intelligence.threatwinds.com/api/auth/v2/email/verification](https://intelligence.threatwinds.com/api/auth/v2/email/verification)
+**EndPoint:** [https://intelligence.threatwinds.com/api/auth/v2/KeyPair/verification](https://intelligence.threatwinds.com/api/auth/v2/KeyPair/verification)
 
 > **Parameters**
 
-* **verificationCodeID** (_string_): You can obtain it from the email that you wish to verify at the time of its creation or with the New Verification Code endpoint. _e.g.: "1c233e4a-27e7-4b77-8b0d-9a35cf212afe"_\
+* **verificationCodeID** (_string_): You can obtain it from the KeyPair that you wish to verify at the time of its creation or with the [New Verification Code](./) endpoint. _e.g.: "1c233e4a-27e7-4b77-8b0d-9a35cf212afe"_\
 
-* **code** (_string_): A code sent to your preferred email when a email is created in the system. _e.g.: "757564"_\
+* **code** (_string_): A code sent to your preferred email when a KeyPair is created. _e.g.: "757564"_\
 
 
-To verify a Email, use a **PUT** request, for example:
+To close a KeyPair, use a **PUT** request, for example:
 
 ```bash
 curl -X 'PUT' \
-  'https://intelligence.threatwinds.com/api/auth/v2/email/verification' \
+  'https://intelligence.threatwinds.com/api/auth/v2/KeyPair/verification' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -323,7 +336,7 @@ curl -X 'PUT' \
 
 #### Returns the message "acknowledged"
 
-When a email is successfully verified, the code returns a JSON object with a 'message' field whose value is 'acknowledged'.
+When a KeyPair is successfully verified, the code returns a JSON object with a 'message' field whose value is 'acknowledged'.
 
 > Fields of the response:
 
@@ -394,13 +407,13 @@ For example:
 }
 ```
 
-## New Verification Code <a href="#newcodeemail" id="newcodeemail"></a>
+## New Verification Code <a href="#newcodekeypair" id="newcodekeypair"></a>
 
 This API endpoint sends a new verification code.\
 \
 
 
-**EndPoint:** [https://intelligence.threatwinds.com/api/auth/v2/email/verification](https://intelligence.threatwinds.com/api/auth/v2/email/verification)
+**EndPoint:** [https://intelligence.threatwinds.com/api/auth/v2/keypair/verification](https://intelligence.threatwinds.com/api/auth/v2/keypair/verification)
 
 > **Parameters**
 
@@ -411,7 +424,8 @@ e.g.: Bearer fq6JoEFTsxiXAl1cVxPDnK4emIQCwaUBfq6JoEFTsxiXAl1cVxPDnK4emIQCwaUB
 ```
 
 * **Message** (_Json_):
-  * **address** (string): The email parameter is the email address that you want to verify and you want to send a new verification code. _e.g.: john@doe.net_\
+  * **apiKey** (_string_): The apiKey is a unique identifier that, when combined with the apiSecret, serves as a method of authentication for accessing to the endpoints that require authentication. You can get it at the time of its creation or when you return the list of yours keyPairs.
+  * **apiSecret** (_string_): The apiSecret is a piece of confidential information that, when combined with the apiKey, serves as a method of authentication for accessing to the endpoints that require it. This is only obtained at the time of its creation.\
     \
 
 
@@ -419,12 +433,13 @@ To get a new verification code, use a **POST** request, for example:
 
 ```
 curl -X 'POST' \
-  'https://intelligence.threatwinds.com/api/auth/v2/email/verification' \
+  'https://intelligence.threatwinds.com/api/auth/v2/keypair/verification' \
   -H 'accept: application/json' \
   -H 'Authorization: Jlore138gST9TnQKRWZZzLW4NfxCo0q8' \
   -H 'Content-Type: application/json' \
   -d '{
-  "address": "john@doe.com"
+  "apiKey": "fq6JoEFTsxiXAl1cVxPDnK4emIQCwaUB",
+  "apiSecret": "fq6JoEFTsxiXAl1cVxPDnK4emIQCwaUBfq6JoEFTsxiXAl1cVxPDnK4emIQCwaUB"
 }'
 ```
 
@@ -434,11 +449,11 @@ curl -X 'POST' \
 
 #### Returns a verificationCodeID.
 
-Returns a new verificationCodeID and a code is sent to the email. Then you can use both in the Verification Endpoint to verify your email.
+Returns a new verificationCodeID and **a code is sent to your preferred email**. Then you can use both in the [Verify Endpoint](./#verifyKeyPair) to verify your KeyPair.
 
 > Fields of the response:
 
-* **verificationCodeID** (_string_): The verification code id that is used in the Email Verification Endpoint ensure that the email is valid. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
+* **verificationCodeID** (_string_): The verification code id that is used in the [KeyPair Verification Endpoint](./) to ensure that the KeyPair is valid. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
   \
 
 
@@ -474,9 +489,9 @@ A 403 error code, also known as a Forbidden error, indicates that the server und
 
 > **Code 404 - Not found**
 
-The HTTP status code 404, also known as a "Not Found" error occurs when the requested resource, in this case the email, cannot be found.
+The HTTP status code 404, also known as a "Not Found" error occurs when the requested resource, in this case the KeyPair, cannot be found.
 
-There are several reasons why this may occur, such as the email not existing in the system or this has expired. It's important to double-check the authorization header.
+There are several reasons why this may occur, such as the KeyPair not existing in the system or this has expired. It's important to double-check the authorization header.
 
 For example:
 
@@ -491,32 +506,29 @@ For example:
 
 We get this code when an internal server error occurs. This is not user related.
 
-## Set Preferred Email <a href="#setpreferredkemail" id="setpreferredkemail"></a>
+## Check KeyPair <a href="#checkkeypair" id="checkkeypair"></a>
 
-This API endpoint an email as preferred\
+This API endpoint check a KeyPair and returns privileges\
 \
 
 
-**EndPoint:** \<https://intelligence.threatwinds.com/api/auth/v2/ /email/preferred>
+**EndPoint:** [https://intelligence.threatwinds.com/api/auth/v2/KeyPair](https://intelligence.threatwinds.com/api/auth/v2/KeyPair)
 
 > **Parameters**
 
-* **Authorization header** (_string_): This authorization header can be obtained from an active session of the account. Please ensure that the session is active before attempting to retrieve the authorization header for the request.\_e.g.:
-* **Message** (_Json_):
-  * **emailID** (_string_): The id of the email that was created. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
+* **apiKey** (_string_): The apiKey is a unique identifier that, when combined with the apiSecret, serves as a method of authentication for accessing to the endpoints that require authentication. You can get it at the time of its creation or when you return the list of yours keyPairs.
+* **apiSecret** (_string_): The apiSecret is a piece of confidential information that, when combined with the apiKey, serves as a method of authentication for accessing to the endpoints that require it. This is only obtained at the time of its creation.\
+  \
 
 
-To set a preferred email, use a **PUT** request, for example:
+To get the currents KeyPairs, use a **GET** request, for example:
 
 ```bash
-curl -X 'PUT' \
-  'https://intelligence.threatwinds.com/api/auth/v2/email/preferred' \
+curl -X 'GET' \
+  'https://intelligence.threatwinds.com/api/auth/v2/keypair' \
   -H 'accept: application/json' \
-  -H 'Authorization: Jlore138gST9TnQKRWZZzLW4NfxCo0q8' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "emailID": "5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e"
-}'
+  -H 'api-key: 5i3w1FwOAGehi5Ce' \
+  -H 'api-secret: HAciZAv0IODXAd2fXYEdZMAZHiOKb3En'
 ```
 
 > **Returns**
@@ -525,7 +537,24 @@ curl -X 'PUT' \
 
 #### Returns the message "acknowledged"
 
-When a email is successfully set as preferred, the code returns a JSON object with a 'message' field whose value is 'acknowledged'.
+When a KeyPair is successfully retrieved, the code returns a JSON object with info about the KeyPair and the user.
+
+> Fields of the response:
+
+* **userID** (_string_): The user id owner of the KeyPair. _e.g.:"5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e"_
+* **userAlias** (_string_) The user's alias on the platform. _e.g.:johny_\
+
+* **userName** (_string_): user's full name.
+* **apiKey** (_string_): The apiKey is a unique identifier that, when combined with the apiSecret, serves as a method of authentication for accessing to the endpoints that require authentication. It acts as a public key that identifies the authorized user or system making the API request.
+* **expireAt** (_integer_): A timestamp that represents the expiration datetime of the KeyPair. _e.g.:1674492894_\
+
+* **keyID** (_string_): The id of the KeyPair that was created. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
+
+* **keyName** (_string_): The name of the KeyPair that was created. _e.g.: 5f35d2c4-5633-4b16-bbf0-5ca22ef8ea2e_\
+
+* **verified** (_boolean_): A boolean that represents if the KeyPair is verified or not.\
+  \
+
 
 > **Errors**
 
@@ -559,9 +588,9 @@ A 403 error code, also known as a Forbidden error, indicates that the server und
 
 > **Code 404 - Not found**
 
-The HTTP status code 404, also known as a "Not Found" error occurs when the requested resource, in this case the email, cannot be found.
+The HTTP status code 404, also known as a "Not Found" error occurs when the requested resource, in this case the KeyPair, cannot be found.
 
-There are several reasons why this may occur, such as the email not existing in the system or this has expired. It's important to double-check the parameters.
+There are several reasons why this may occur, such as the KeyPair not existing in the system or this has expired. It's important to double-check the parameters.
 
 For example:
 
