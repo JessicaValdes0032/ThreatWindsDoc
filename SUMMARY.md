@@ -83,7 +83,7 @@
           * [Match Phrase Prefix](http://localhost:5000/s/WV6EWHgm22WhKB1xJGHx/search/query-and-aggregations/query#matchPhrasePrefix)
           * [Query String Query](http://localhost:5000/s/WV6EWHgm22WhKB1xJGHx/search/query-and-aggregations/query#queryString)
           * [Simple Query String](http://localhost:5000/s/WV6EWHgm22WhKB1xJGHx/search/query-and-aggregations/query#simpleQueryString)
-          * [Advanced Options Section](http://localhost:5000/s/WV6EWHgm22WhKB1xJGHx/search/query-and-aggregations/query#advancedOptions)      
+          * [Advanced Options Section](http://localhost:5000/s/WV6EWHgm22WhKB1xJGHx/search/query-and-aggregations/query#advancedOptions)
 * [Use Cases](use-cases/README.md)
   * [Get Negative Reputation Domains](use-cases/example-2.md)
   * [Website Reputation Chrome Extension](use-cases/example-3.md)
