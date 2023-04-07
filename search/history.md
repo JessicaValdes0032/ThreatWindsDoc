@@ -1,14 +1,14 @@
-# Associations (Advanced)
+# Get Entities Records History
 
-This API endpoint offers advanced search capabilities for entity associations, utilizing an OpenSearch-like query search feature that enables fast and efficient searching of a vast number of entities. Additionally, it provides aggregation capabilities that allow you to conduct intricate data analysis on your search results, enabling you to gain deep insights into entity associations.
+This software interface offers robust search functionality for entity report history by providing an OpenSearch-like query search option. This enables you to easily and effectively search through a vast number of reports. Furthermore, it provides aggregation features that enable you to conduct intricate data analysis on your search results.
 
-**EndPoint:** [https://intelligence.threatwinds.com/api/search/v1/associations/{id}/advanced](https://intelligence.threatwinds.com/api/search/v1/associations/%7Bid%7D/advanced)\
+**EndPoint:** [https://intelligence.threatwinds.com/api/search/v1/entities/history](https://intelligence.threatwinds.com/api/search/v1/entities/history)\
 \
 
 
 > **Parameters**
 
-*   **Autentication**: Authentication can be via Authorization header or Key-Pair. See the [Authentication page](<ASSOCIATION(ADVANCED) copy.md>) for more details.\
+*   **Autentication**: Authentication can be via Authorization header or Key-Pair. See the [Authentication page](history.md) for more details.\
     \
 
 
@@ -18,14 +18,13 @@ This API endpoint offers advanced search capabilities for entity associations, u
     fq6JoEFTsxiXAl1cVxPDnK4emIQCwaUBfq6JoEFTsxiXAl1cVxPDnK4emIQCwaUB
     ```
 
-    * **api-key** (_string_): It needs to be combined with the api-secret. You can get it from the [Key Pair Endpoints](<ASSOCIATION(ADVANCED) copy.md>).
-    * **api-secret** (_string_): It needs to be combined with the api-key. You can get it from the [Key Pair Endpoints](<ASSOCIATION(ADVANCED) copy.md>).
+    * **api-key** (_string_): It needs to be combined with the api-secret. You can get it from the [Key Pair Endpoints](history.md).
+    * **api-secret** (_string_): It needs to be combined with the api-key. You can get it from the [Key Pair Endpoints](history.md).
 * **limit** (_int_): This parameter specifies the maximum number of results you wish to retrieve per page. (_Default is 10_)
 * **page**(_int_): This parameter specifies the page of results you want to retrieve, where each page contains a specified number of objects based on the value of the "limit" parameter. (_Default is 0_)
 * **sort**(_string_): The sort parameter is a query parameter that allows you to sort the results of your search based on a specific field. _e.g.: reputation_\
 
 * **order**(_"asc" or "desc"_): The order parameter specifies the order in which the results should be sorted based on the specified "sort" parameter. It can take two values: "asc" for ascending order and "desc" for descending order.(_Default is asc_)
-* **entityID** (_string_): The ID of the entity for which you want to retrieve the associations.
 *   #### Message:
 
     The body parameter that is going to contain the OpenSearch-like query search and aggregations.\
@@ -36,10 +35,17 @@ This API endpoint offers advanced search capabilities for entity associations, u
 
     ```json
     {
-    "aggs": {
-    "accuracy-stats": {
-      "stats": {
-        "field": "accuracy"
+        "aggs": {
+    "most-active-malwares": {
+      "terms": {
+        "field": "attributes.malware.keyword",
+        "size": 50
+      }
+    },
+    "malware_per_minute": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "interval": "minute"
       }
     }
     },
@@ -49,63 +55,78 @@ This API endpoint offers advanced search capabilities for entity associations, u
         {
           "term": {
             "type": {
-              "value": "md5"
+              "value": "malware"
             }
           }
-        }
-      ]
-    }
-    }
-    }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "now-5m",
+              "lte": "now"
+            }}}
+      ]}}}
     ```
 
-"In the previous example, we filtered all entities with the attribute "md5-type" that are related to a specific entity, and obtained statistics on the accuracy of the results."
+In the previous example, we obtained a list of reports for malware-type entities within the last five minutes. We also retrieved a histogram displaying the frequency of reports in one-minute intervals, as well as a ranking of the most active malware and the corresponding number of reports for each.
 
 We get a response like:
 
 ```json
 {
-  "pages": 20,
-  "items": 276,
+  "pages": 264,
+  "items": 2632,
   "results": [
     {
-      "@timestamp": "2023-03-31T13:08:08.220244275Z",
-      "accuracy": 1,
+      "@timestamp": "2023-03-30T14:37:39.806070224Z",
       "attributes": {
-        "descriptor": "common-file",
-        "md5": "2ed56a78d957dcde2db76e830f5f0741"
+        "malware": "pdf dropper agent",
+        "malware-family": "pdf",
+        "malware-type": "dropper"
       },
-      "id": "md5-2bef618643db4b0f1b8631b1567abf2262dc4161e94f671c5a9197d3b22a2c52",
+      "entityID": "malware-20eae8ae8ec23315a7d9f07c0cbcd3651657b8604ef02e9dfcbfd6304cb824b8",
+      "id": "f87b13f3-cf04-4d6a-83b2-90c477e1e6e7",
       "reputation": -3,
-      "type": "md5"
-    },...
-  ],
+      "type": "malware",
+      "userID": "2e4ad29c-bf32-47b0-ae0d-67ec870b1677"
+    },...],
+    ],
   "aggregations": {
-    "accuracy-stats": {
-      "avg": 1,
-      "count": 276,
-      "max": 1,
-      "min": 1,
-      "sum": 256
-    }
-  }
-}
+    "malware_per_minute": {
+      "buckets": [
+        {
+          "doc_count": 111,
+          "key": 1680186720000,
+          "key_as_string": "2023-03-30T14:32:00.000Z"
+        },...]},
+    "most-active-malwares": {
+      "buckets": [
+        {
+          "doc_count": 2592,
+          "key": "pdf dropper agent"
+        },..]}}}   
 ```
 
 If you have not worked with Opensearch or elastic search before you can go to Search and Agregations Page to learn more about performing advanced searches, if you did, you can do a fast review about the queries we have available.
 
-To perform a search, use a **POST** request, for example:
+To perform a history search, use a **POST** request, for example:
 
 ```bash
 curl -X 'POST' \
-  'https://intelligence.threatwinds.com/api/search/v1/associations/malware-efefabf74562def7d4fba5e384896ef59a08ba45b54c98fb98a3772f96a6d3cb/advanced' \
+  'https://intelligence.threatwinds.com/api/search/v1/entities/history' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
-  -d '{
-  "aggs": {
-    "accuracy-stats": {
-      "stats": {
-        "field": "accuracy"
+  -d '{"aggs": {
+    "most-active-malwares": {
+      "terms": {
+        "field": "attributes.malware.keyword",
+        "size": 50
+      }
+    },
+    "malware_per_minute": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "interval": "minute"
       }
     }
   },
@@ -115,14 +136,23 @@ curl -X 'POST' \
         {
           "term": {
             "type": {
-              "value": "md5"
+              "value": "malware"
+            }
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "now-5m",
+              "lte": "now"
             }
           }
         }
       ]
     }
   }
-  }'
+}'
+'
 ```
 
 > **Returns**
@@ -131,14 +161,14 @@ curl -X 'POST' \
 
 ### Retrieving a Specified Page of Results and Aggregations in the Response
 
-When a search query is executed in the API, the response object contains a list of hits that correspond to the entities associated with the given entity and that matched the search criteria, along with the corresponding aggregations.
+When a search query is executed in the API, the response object contains a list of hits that correspond to the entity records that matched the search criteria, along with the corresponding aggregation.
 
 The following fields are included in the response:
 
 * **pages** (_string_): The total number of pages in the result set.\
 
 * **items** (_string_) The total number of entities in the result set.
-* **result** (_entity list_): A list of hits that correspond to the entities that matched the search criteria.
+* **result** (_entity list_): A list of hits that correspond to the records that matched the search criteria.
   * **aggregations**(_JSON_): A list of metrics based on the criteria specified in the search request.
 
 > **Errors**
@@ -156,8 +186,8 @@ For example:
 
 ```json
 {
-  "uuid": "60791adb-e0f3-4df0-a45a-02a1718d75f5",
-  "error": "... error: {\"error\":{\"root_cause\":[{\"type\":\"illegal_argument_exception\",\"reason\":\"query malformed, empty clause found at [1:131]\"}],\"type\":\"illegal_argument_exception\",\"reason\":\"query malformed, empty clause found at [1:131]\"},\"status\":400}"
+  "uuid": "85f0c8a9-d361-49e9-a9d1-826c770fcffb",
+  "error": "incorrect authorization header"
 }
 ```
 
@@ -197,8 +227,8 @@ For example:
 
 ```json
 {
-  "uuid": "e23611e9-2974-4cd7-a08b-47fe7d35fa9a",
-  "error": "entity not found"
+  "uuid": "9ca21f08-c3a3-4eeb-8179-49669d7fe1fa",
+  "error": "record not found"
 }
 ```
 

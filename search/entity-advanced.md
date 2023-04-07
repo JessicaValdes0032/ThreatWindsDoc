@@ -1,14 +1,16 @@
-# Associations (Advanced)
+# Get Entities (Advanced)
 
-This API endpoint offers advanced search capabilities for entity associations, utilizing an OpenSearch-like query search feature that enables fast and efficient searching of a vast number of entities. Additionally, it provides aggregation capabilities that allow you to conduct intricate data analysis on your search results, enabling you to gain deep insights into entity associations.
+This API endpoint provides powerful search capabilities using an OpenSearch-like query search option, allowing you to quickly and efficiently search through a large number of entities. Additionally, we offer aggregation capabilities, allowing you to perform complex data analysis on your search results.
 
-**EndPoint:** [https://intelligence.threatwinds.com/api/search/v1/associations/{id}/advanced](https://intelligence.threatwinds.com/api/search/v1/associations/%7Bid%7D/advanced)\
+With our API, you can easily specify search parameters such as the search terms, filters, and sort criteria to refine your search results. You can also specify aggregation criteria, including min, max, sum, average, and many others, to group and analyze your search results based on specific fields or terms.
+
+**EndPoint:** [https://intelligence.threatwinds.com/api/search/v1/entity](https://intelligence.threatwinds.com/api/search/v1/entity)\
 \
 
 
 > **Parameters**
 
-*   **Autentication**: Authentication can be via Authorization header or Key-Pair. See the [Authentication page](<ASSOCIATION(ADVANCED) copy.md>) for more details.\
+*   **Autentication**: Authentication can be via Authorization header or Key-Pair. See the [Authentication page](entity-advanced.md) for more details.\
     \
 
 
@@ -18,14 +20,13 @@ This API endpoint offers advanced search capabilities for entity associations, u
     fq6JoEFTsxiXAl1cVxPDnK4emIQCwaUBfq6JoEFTsxiXAl1cVxPDnK4emIQCwaUB
     ```
 
-    * **api-key** (_string_): It needs to be combined with the api-secret. You can get it from the [Key Pair Endpoints](<ASSOCIATION(ADVANCED) copy.md>).
-    * **api-secret** (_string_): It needs to be combined with the api-key. You can get it from the [Key Pair Endpoints](<ASSOCIATION(ADVANCED) copy.md>).
+    * **api-key** (_string_): It needs to be combined with the api-secret. You can get it from the [Key Pair Endpoints](entity-advanced.md).
+    * **api-secret** (_string_): It needs to be combined with the api-key. You can get it from the [Key Pair Endpoints](entity-advanced.md).
 * **limit** (_int_): This parameter specifies the maximum number of results you wish to retrieve per page. (_Default is 10_)
 * **page**(_int_): This parameter specifies the page of results you want to retrieve, where each page contains a specified number of objects based on the value of the "limit" parameter. (_Default is 0_)
 * **sort**(_string_): The sort parameter is a query parameter that allows you to sort the results of your search based on a specific field. _e.g.: reputation_\
 
 * **order**(_"asc" or "desc"_): The order parameter specifies the order in which the results should be sorted based on the specified "sort" parameter. It can take two values: "asc" for ascending order and "desc" for descending order.(_Default is asc_)
-* **entityID** (_string_): The ID of the entity for which you want to retrieve the associations.
 *   #### Message:
 
     The body parameter that is going to contain the OpenSearch-like query search and aggregations.\
@@ -37,6 +38,12 @@ This API endpoint offers advanced search capabilities for entity associations, u
     ```json
     {
     "aggs": {
+    "top-malware-types": {
+      "terms": {
+        "field": "attributes.malware-type.keyword",
+        "size": 50
+      }
+    },
     "accuracy-stats": {
       "stats": {
         "field": "accuracy"
@@ -49,44 +56,51 @@ This API endpoint offers advanced search capabilities for entity associations, u
         {
           "term": {
             "type": {
-              "value": "md5"
-            }
-          }
-        }
-      ]
-    }
-    }
-    }
+              "value": "malware"
+            }}}]}}}
     ```
 
-"In the previous example, we filtered all entities with the attribute "md5-type" that are related to a specific entity, and obtained statistics on the accuracy of the results."
+In the previous example we are filtering all malware-type entities and obtaining the number of registered malware by type.
 
 We get a response like:
 
 ```json
 {
-  "pages": 20,
-  "items": 276,
+ "pages": 48,
+  "items": 475,
   "results": [
     {
-      "@timestamp": "2023-03-31T13:08:08.220244275Z",
-      "accuracy": 1,
+      "@timestamp": "2023-03-28T09:05:09.669101722Z",
+      "accuracy": 2,
       "attributes": {
-        "descriptor": "common-file",
-        "md5": "2ed56a78d957dcde2db76e830f5f0741"
+        "malware": "win trojan sdbot",
+        "malware-family": "win",
+        "malware-type": "trojan"
       },
-      "id": "md5-2bef618643db4b0f1b8631b1567abf2262dc4161e94f671c5a9197d3b22a2c52",
+      "id": "malware-a208c4b33a1763284ce9a4584efa296372082ba82ee174597092f972767de163",
       "reputation": -3,
-      "type": "md5"
-    },...
-  ],
-  "aggregations": {
+      "type": "malware"
+    },
+    ...
+    ],
+      "aggregations": {
     "accuracy-stats": {
-      "avg": 1,
-      "count": 276,
-      "max": 1,
+      "avg": 1.9873684210526317,
+      "count": 475,
+      "max": 3,
       "min": 1,
-      "sum": 256
+      "sum": 944
+    },
+    "top-malware-types": {
+      "buckets": [
+        {
+          "doc_count": 348,
+          "key": "trojan"
+        },
+    ...
+      ],
+       "doc_count_error_upper_bound": 0,
+      "sum_other_doc_count": 0
     }
   }
 }
@@ -98,11 +112,17 @@ To perform a search, use a **POST** request, for example:
 
 ```bash
 curl -X 'POST' \
-  'https://intelligence.threatwinds.com/api/search/v1/associations/malware-efefabf74562def7d4fba5e384896ef59a08ba45b54c98fb98a3772f96a6d3cb/advanced' \
+  'https://intelligence.threatwinds.com/api/search/v1/entities?sort=reputation' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
   "aggs": {
+    "top-malware-types": {
+      "terms": {
+        "field": "attributes.malware-type.keyword",
+        "size": 50
+      }
+    },
     "accuracy-stats": {
       "stats": {
         "field": "accuracy"
@@ -115,14 +135,15 @@ curl -X 'POST' \
         {
           "term": {
             "type": {
-              "value": "md5"
+              "value": "malware"
             }
           }
         }
       ]
     }
   }
-  }'
+}
+'
 ```
 
 > **Returns**
@@ -131,7 +152,7 @@ curl -X 'POST' \
 
 ### Retrieving a Specified Page of Results and Aggregations in the Response
 
-When a search query is executed in the API, the response object contains a list of hits that correspond to the entities associated with the given entity and that matched the search criteria, along with the corresponding aggregations.
+When a search query is executed in the API, the response object contains a list of hits that correspond to the entities that matched the search criteria, along with the corresponding aggregation.
 
 The following fields are included in the response:
 
